@@ -1,8 +1,6 @@
 package com.yarsi.yarsi;
 
 import android.app.Activity;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Base64;
@@ -15,16 +13,16 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * Created by Y700FROG on 23/11/2017.
@@ -42,6 +40,8 @@ public class LoginActivity extends Activity {
     private TextView tv_Message;
 
     private boolean status = false;
+    String resMessage = "";
+    String txtMessage = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,101 +57,68 @@ public class LoginActivity extends Activity {
         bt_SignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Login login = new Login();
-                login.execute("http://101.50.2.85:10010/oauth/token");
+//                doPost("http://101.50.2.85:10010/oauth/token");
+//                Login login = new Login();
+//                login.execute("http://101.50.2.85:10010/oauth/token");
+
+                makeRequestWithOkHttp("http://101.50.2.85:10010/oauth/token");
             }
         });
     }
 
-    private class Login extends AsyncTask<String, Void, String> {
+    private void makeRequestWithOkHttp(String url) {
+        String client_id = "aplikasijs";
+        String client_secret = "aplikasi123";
+        String valueDecoded = Base64.encodeToString((client_id + ":" + client_secret).getBytes(), Base64.NO_WRAP);
+        String basicHeader = valueDecoded.toString();
+        String basicAuthHeader = "Basic " + basicHeader;
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            status = false;
-            tv_Message.setText("Progress...");
-        }
+//        JSONObject postdata = new JSONObject();
+//        try {
+//            postdata.put("username", "aristio.rizki@gmail.com");
+//            postdata.put("password", "123");
+//            postdata.put("grant_type", "password");
+//        } catch (JSONException e) {
+//            Log.v("JSON Exception", e.toString());
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), postdata.toString());
 
-        @Override
-        protected String doInBackground(String... params) {
-            URL url = null;
-            try {
-                url = new URL(params[0]);
-            } catch (MalformedURLException e) {
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("username", "aristio.rizki@gmail.com")
+                .addFormDataPart("password", "123")
+                .addFormDataPart("grant_type", "password")
+                .build();
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request
+                .Builder()
+                .header("Authorization", basicAuthHeader)
+                .post(requestBody)
+                .url(url)
+                .build();
+
+        System.out.println(request);
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
             }
 
-            try {
-                String client_id = "aplikasijs";
-                String client_secret = "aplikasi123";
-//                byte[] valueDecoded = Base64.decode((client_id + ":" + client_secret).getBytes("UTF-8"), Base64.DEFAULT);
-                String valueDecoded = Base64.encodeToString((client_id + ":" + client_secret).getBytes(), Base64.NO_WRAP);
-
-                String basicheader = valueDecoded.toString();
-
-                String basicAuthHeader = "Basic " + basicheader;
-
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setDoOutput(true);
-                urlConnection.setRequestProperty("Content-Type", "application/json");
-                urlConnection.setRequestProperty("Authorization", basicAuthHeader);
-                urlConnection.setRequestMethod("POST");
-
-                //Building URI
-                Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("username", "admin")
-                        .appendQueryParameter("password", "admin");
-
-                //Getting object of OutputStream from urlConnection to write some data to stream
-                DataOutputStream outputStream = new DataOutputStream(urlConnection.getOutputStream());
-                JSONObject jsonParam = new JSONObject();
-                jsonParam.put("grant_type", "password");
-                jsonParam.put("username","aristio.rizki@gmail.com");
-                jsonParam.put("password","123");
-                outputStream.write(jsonParam.toString().getBytes());
-                outputStream.flush();
-
-                //Writer to write data to OutputStream
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream,"UTF-8"));
-                bufferedWriter.write(builder.build().getEncodedQuery());
-                bufferedWriter.flush();
-                bufferedWriter.close();
-
-                outputStream.close();
-                urlConnection.connect();
-
-                //Getting inputstream from connection, that is response which we got from server
-//                InputStream inputStream = urlConnection.getInputStream();
-
-                //Reading the response
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                String s = bufferedReader.readLine();
-                bufferedReader.close();
-
-                if (s != null) {
-                    status = true;
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String result = response.body().string();
+                try {
+                    JSONObject json = new JSONObject(result);
+                    System.out.println("Access Token > " + json.getString("access_token"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                //Returning the response message to onPostExecute method
-                return s;
-            } catch (JSONException e) {
-                Log.e("Error JSON : ", e.getMessage(), e);
-            } catch (IOException e) {
-                Log.e("Error IO: ", e.getMessage(), e);
-            } catch (Exception e) {
-                Log.e("Error: ", e.getMessage(), e);
             }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-
-            if (status) {
-                tv_Message.setText("OK");
-            } else {
-                tv_Message.setText("Failed!");
-            }
-        }
+        });
     }
+
 }
