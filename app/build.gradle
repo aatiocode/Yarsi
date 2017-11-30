@@ -16,6 +16,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+        buildTypes.each {
+            it.buildConfigField 'String', 'YarsiAuthUrl', YarsiAuthUrl
+            it.buildConfigField 'String', 'YarsiApiClientId', YarsiApiClientId
+            it.buildConfigField 'String', 'YarsiApiClientSecret', YarsiApiClientSecret
+        }
     }
 }
 
@@ -34,7 +40,10 @@ dependencies {
     compile 'com.android.support:cardview-v7:26.1.0'
     compile 'com.google.firebase:firebase-messaging:11.6.0'
     compile 'com.google.firebase:firebase-core:11.6.0'
-    compile 'com.squareup.okhttp3:okhttp:3.9.1'
+
+    // Retrofit & OkHttp
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
