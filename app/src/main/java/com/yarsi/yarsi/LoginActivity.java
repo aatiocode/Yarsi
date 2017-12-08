@@ -1,8 +1,10 @@
 package com.yarsi.yarsi;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,9 +13,8 @@ import android.widget.Toast;
 
 import com.yarsi.yarsi.model.AuthPojo;
 import com.yarsi.yarsi.services.AuthClient;
+import com.yarsi.yarsi.services.LoginServices;
 import com.yarsi.yarsi.services.ServiceGenerator;
-
-import java.util.HashMap;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -35,11 +36,11 @@ public class LoginActivity extends Activity {
     private Button bt_SignIn;
     // Message
     private TextView tv_Message;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.v("Login Services","Login Activity Redirected!");
         setContentView(R.layout.activity_login);
         //Text to display response result
         et_Username = (EditText) findViewById(R.id.etUsername);
@@ -85,7 +86,15 @@ public class LoginActivity extends Activity {
             @Override
             public void onResponse(Call<AuthPojo> call, Response<AuthPojo> response) {
                 if (response.isSuccessful()) {
-                    Toast.makeText(LoginActivity.this, "Success : " + response.body().getAccess_token(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Success", Toast.LENGTH_SHORT).show();
+
+                    LoginServices login = new LoginServices();
+                    login.storeLoginData(getApplicationContext(), response.body());
+
+                    Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
+                    myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(myIntent);
+                    finish();
                 } else {
                     Toast.makeText(LoginActivity.this, "Login incorrect : ", Toast.LENGTH_SHORT).show();
                 }
@@ -96,6 +105,7 @@ public class LoginActivity extends Activity {
                 Toast.makeText(LoginActivity.this, "error!", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
 //    private void makeRequestWithOkHttp(String url) {

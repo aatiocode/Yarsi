@@ -1,5 +1,6 @@
 package com.yarsi.yarsi;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -10,6 +11,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.yarsi.yarsi.services.LoginServices;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,6 +49,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.v("Login Services","Main Activity");
+        LoginServices login = new LoginServices();
+        if (!login.checkLogin(getApplicationContext())) {
+            Log.v("Login Services","Main Activity Cek Login");
+
+            Intent myIntent = new Intent(getApplicationContext(), LoginActivity.class);
+            myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(myIntent);
+            finish();
+        }
+
         setContentView(R.layout.activity_main);
 
         HomeFragment homeFragment = new HomeFragment();
