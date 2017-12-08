@@ -1,13 +1,17 @@
 package com.yarsi.yarsi;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.yarsi.yarsi.services.LoginServices;
 import com.yarsi.yarsi.slider.SliderFragment;
 import com.yarsi.yarsi.slider.SliderIndicator;
 import com.yarsi.yarsi.slider.SliderPagerAdapter;
@@ -28,11 +32,13 @@ public class HomeFragment extends Fragment {
 
     private SliderView sliderView;
     private LinearLayout mLinearLayout;
+    LoginServices loginServices = new LoginServices();;
+    ImageView ivLogout;
+    CardView cvLogout;
 
     public HomeFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,6 +46,20 @@ public class HomeFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         sliderView = (SliderView) rootView.findViewById(R.id.sliderView);
         mLinearLayout = (LinearLayout) rootView.findViewById(R.id.pagesContainer);
+        cvLogout = rootView.findViewById(R.id.cvLogout);
+
+        cvLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginServices.logoutProcess(v.getContext());
+
+                Intent myIntent = new Intent(v.getContext(), LoginActivity.class);
+                myIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(myIntent);
+                getActivity().finish();
+            }
+        });
+
         setupSlider();
 
         // Inflate the layout for this fragment

@@ -3,6 +3,7 @@ package com.yarsi.yarsi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -27,6 +28,7 @@ import retrofit2.Response;
  */
 
 public class LoginActivity extends Activity {
+    boolean doubleBackToExitPressedOnce = false;
 
     // User name
     private EditText et_Username;
@@ -36,50 +38,48 @@ public class LoginActivity extends Activity {
     private Button bt_SignIn;
     // Message
     private TextView tv_Message;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.v("Login Services","Login Activity Redirected!");
+        Log.v("Login Services", "Login Activity Redirected!");
         setContentView(R.layout.activity_login);
         //Text to display response result
         et_Username = (EditText) findViewById(R.id.etUsername);
         et_Password = (EditText) findViewById(R.id.etPassword);
         bt_SignIn = (Button) findViewById(R.id.btnLogin);
-        tv_Message = (TextView) findViewById(R.id.tvStatus);
 
         bt_SignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                doPost("http://101.50.2.85:10010/oauth/token");
-//                Login login = new Login();
-//                login.execute("http://101.50.2.85:10010/oauth/token");
-
-//                makeRequestWithOkHttp("http://101.50.2.85:10010/oauth/token");
-
-                doLoginDua();
+                if (!validateField(et_Username) || !validateField(et_Password)) {
+                    return;
+                }
+                doLoginDua(et_Username.getText().toString(), et_Password.getText().toString());
             }
         });
     }
 
-    public void doLoginDua() {
+    private boolean validateField(TextView txtView) {
+        if (txtView.getText() != null && !"".equals(txtView.getText().toString())) {
+            return true;
+        }
+        Toast.makeText(LoginActivity.this, "Field wajib diisi!", Toast.LENGTH_SHORT).show();
+        txtView.setFocusableInTouchMode(true);
+        txtView.requestFocus();
+        return false;
+    }
+
+    public void doLoginDua(String username, String password) {
         String client_id = BuildConfig.YarsiApiClientId;
         String client_secret = BuildConfig.YarsiApiClientSecret;
         AuthClient authClient = ServiceGenerator.createService(AuthClient.class, client_id, client_secret);
 
-        String username = "aristio.rizki@gmail.com";
-        String password = "123";
         String grant_type = "password";
         RequestBody reqUser = RequestBody.create(MultipartBody.FORM, username);
         RequestBody reqPass = RequestBody.create(MultipartBody.FORM, password);
         RequestBody reqGrantType = RequestBody.create(MultipartBody.FORM, grant_type);
-
-        MultipartBody reqBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("username", username)
-                .addFormDataPart("password", password)
-                .addFormDataPart("grant_type", grant_type)
-                .build();
 
         Call<AuthPojo> call = authClient.login(reqUser, reqPass, reqGrantType);
         call.enqueue(new Callback<AuthPojo>() {
@@ -108,60 +108,24 @@ public class LoginActivity extends Activity {
 
     }
 
-//    private void makeRequestWithOkHttp(String url) {
-//        String client_id = "aplikasijs";
-//        String client_secret = "aplikasi123";
-//        String valueDecoded = Base64.encodeToString((client_id + ":" + client_secret).getBytes(), Base64.NO_WRAP);
-//        String basicHeader = valueDecoded.toString();
-//        String basicAuthHeader = "Basic " + basicHeader;
-//
-////        JSONObject postdata = new JSONObject();
-////        try {
-////            postdata.put("username", "aristio.rizki@gmail.com");
-////            postdata.put("password", "123");
-////            postdata.put("grant_type", "password");
-////        } catch (JSONException e) {
-////            Log.v("JSON Exception", e.toString());
-////            // TODO Auto-generated catch block
-////            e.printStackTrace();
-////        }
-////        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), postdata.toString());
-//
-//        RequestBody requestBody = new MultipartBody.Builder()
-//                .setType(MultipartBody.FORM)
-//                .addFormDataPart("username", "aristio.rizki@gmail.com")
-//                .addFormDataPart("password", "123")
-//                .addFormDataPart("grant_type", "password")
-//                .build();
-//
-//        OkHttpClient client = new OkHttpClient();
-//        Request request = new Request
-//                .Builder()
-//                .header("Authorization", basicAuthHeader)
-//                .post(requestBody)
-//                .url(url)
-//                .build();
-//
-//        System.out.println(request);
-//
-//        client.newCall(request).enqueue(new Callback() {
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                final String result = response.body().string();
-//                try {
-//                    JSONObject json = new JSONObject(result);
-//                    System.out.println("Access Token > " + json.getString("access_token"));
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//    }
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
+    }
 
 
 }
