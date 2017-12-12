@@ -4,7 +4,9 @@
     <string name="title_Reservasi">Reservasi</string>
     <string name="title_notifikasi">Notifikasi</string>
     <string name="title_account">Account</string>
-
+    <string name="lbl_jenis_poli">Jenis Poli</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_dokter_form">DokterFormActivity</string>
+    <string name="title_activity_dokter_list">DokterListActivity</string>
 </resources>

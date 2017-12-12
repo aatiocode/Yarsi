@@ -1,12 +1,14 @@
 package com.yarsi.yarsi;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.yarsi.yarsi.slider.SliderFragment;
 import com.yarsi.yarsi.slider.SliderIndicator;
@@ -28,6 +30,7 @@ public class HomeFragment extends Fragment {
 
     private SliderView sliderView;
     private LinearLayout mLinearLayout;
+    private RelativeLayout menuJadwalDokter;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -41,6 +44,16 @@ public class HomeFragment extends Fragment {
         sliderView = (SliderView) rootView.findViewById(R.id.sliderView);
         mLinearLayout = (LinearLayout) rootView.findViewById(R.id.pagesContainer);
         setupSlider();
+
+        menuJadwalDokter = (RelativeLayout) rootView.findViewById(R.id.menuJadwalDokter);
+
+        menuJadwalDokter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent jadwalDokter = new Intent(getActivity(), DokterFormActivity.class);
+                startActivity(jadwalDokter);
+            }
+        });
 
         // Inflate the layout for this fragment
         return rootView;
