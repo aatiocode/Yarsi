@@ -50,6 +50,9 @@ public class LoginActivity extends Activity {
         et_Password = (EditText) findViewById(R.id.etPassword);
         bt_SignIn = (Button) findViewById(R.id.btnLogin);
 
+        // TODO dev test purpose
+        et_Username.setText("aristio.rizki@gmail.com");
+        et_Password.setText("123");
         bt_SignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
