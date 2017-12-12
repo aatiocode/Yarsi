@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.yarsi.yarsi.services.LoginServices;
 import com.yarsi.yarsi.slider.SliderFragment;
@@ -32,6 +33,7 @@ public class HomeFragment extends Fragment {
 
     private SliderView sliderView;
     private LinearLayout mLinearLayout;
+    private RelativeLayout menuJadwalDokter;
     LoginServices loginServices = new LoginServices();;
     ImageView ivLogout;
     CardView cvLogout;
@@ -39,6 +41,7 @@ public class HomeFragment extends Fragment {
     public HomeFragment() {
         // Required empty public constructor
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,6 +64,16 @@ public class HomeFragment extends Fragment {
         });
 
         setupSlider();
+
+        menuJadwalDokter = (RelativeLayout) rootView.findViewById(R.id.menuJadwalDokter);
+
+        menuJadwalDokter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent jadwalDokter = new Intent(getActivity(), DokterFormActivity.class);
+                startActivity(jadwalDokter);
+            }
+        });
 
         // Inflate the layout for this fragment
         return rootView;
