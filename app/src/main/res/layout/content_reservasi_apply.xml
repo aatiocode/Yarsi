@@ -40,7 +40,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:layout_weight="6"
-                android:prompt="Perawatan"
                 android:spinnerMode="dropdown"
                 tools:layout_editor_absoluteX="8dp"
                 tools:layout_editor_absoluteY="240dp" />
@@ -67,7 +66,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:layout_weight="6"
-                android:prompt="Pilih Dokter"
                 android:spinnerMode="dropdown"
                 tools:layout_editor_absoluteX="8dp"
                 tools:layout_editor_absoluteY="240dp" />
