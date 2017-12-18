@@ -7,7 +7,7 @@ package com.yarsi.yarsi.model;
 public class Dokter {
     public String id, namaDepan, namaBelakang, spesialis, foto, unitPerawatan, jabatan;
 
-    public Dokter(String id, String namaDepan, String namaBelakang, String spesialis, String foto, String unitPerawatan, String jabatan) {
+    public void setDokter(String id, String namaDepan, String namaBelakang, String spesialis, String foto, String unitPerawatan, String jabatan) {
         this.id = id;
         this.namaDepan = namaDepan;
         this.namaBelakang = namaBelakang;
